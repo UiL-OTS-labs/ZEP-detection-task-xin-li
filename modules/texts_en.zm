@@ -39,6 +39,8 @@ const string    WORD_LEARNING_TEST_INSTRUCTIONS = "TODO: Word learning TEST inst
 
 const string    WORD_LEARNING_FAMILIARIZATION_INSTRUCTIONS = "TODO: Word learning FAMILIARIZATION instructions";
 
+const string     REPEAT_FAMILIARIZATION_BUTTON_TEXT = "<i>Repeat</i> familiarization";
+
 const string	OVERLAY_PRACTICE_DETECTION = "did you hear the first word in the second fragment?";
 
 string 			PRACTICE_DETECTION_INSTRUCTION; // SEE at setup_string()
@@ -51,6 +53,8 @@ const string    END_OF_PRACTICE_DETECTION_INSTRUCTION = "End of the practice par
 //                "<i>Hit Enter when ready to proceed.</i>", 
                 "<i>Hit any button on the button-box when ready to "
                 "proceed.</i>";
+
+const string GENERAL_PAUSE_TEXT = "General pause text";
 
 void setup_strings()
 {

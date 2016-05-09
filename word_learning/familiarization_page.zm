@@ -133,6 +133,7 @@ Page familiarization_page
         void reset()
         {
             full_abort();
+            buttons.button1.fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
             canvas.stop(now());
         }
     }
@@ -188,6 +189,8 @@ Page familiarization_page
     void cleanup()
     {
         layout.reset();
+        
+        continue_flag = false;
  
         control.button_box.disable_buttons();
         control.target = null;

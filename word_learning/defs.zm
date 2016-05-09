@@ -14,8 +14,8 @@ HISTORY:
 \******************************************************************************/
 import globaldefs;
 
-const dur PICTURE_PLUS_PICTURE_PRESENTATION_DURATION = dur(GLOBAL_REFRESH_RATE*60);
-const dur PRE_SHOW_DURATION = dur(GLOBAL_REFRESH_RATE*30);
+const dur PICTURE_PLUS_PICTURE_PRESENTATION_DURATION = dur(GLOBAL_REFRESH_RATE*150);
+const dur PRE_SHOW_DURATION = dur(GLOBAL_REFRESH_RATE*50);
 
 const dur INTERAUDIO_INTERVAL = 500ms;
 

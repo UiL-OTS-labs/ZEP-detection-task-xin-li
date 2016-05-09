@@ -126,6 +126,8 @@ Block task_word_learning
         on_event:entry()
         {
             word_test_page.setup(UNDER_LIMIT_OF_CONSECUTIVE_CORRECTS, true);
+            consecutive_correct = 0;
+            num_cycles = 0;
         }
 
         on_event:exit()
@@ -135,48 +137,64 @@ Block task_word_learning
 
         Trial trial
         {
-            WordLearningItem item;
-
-            on_event:entry()
+            
+            SubTrial subtrial
             {
-                if (test.cycle % word_learning_items.size == 0) // prevent an easy repeat of 3 or more.
-                    if (shuffle_test_items(word_learning_items) != OK) terminate;
- 
-                item = word_learning_items[test.cycle % word_learning_items.size];
+                WordLearningItem item;
 
-                control.set_status("Test, correct => " + string(consecutive_correct) + "/" + string(UNDER_LIMIT_OF_CONSECUTIVE_CORRECTS) + ", " + word_learning_image_file[item.target_image_filename_index]);
+                on_event:entry()
+                {
+                    if (test.cycle % word_learning_items.size == 0) // prevent an easy repeat of 3 or more.
+                        if (shuffle_test_items(word_learning_items) != OK) terminate;
+     
+                    item = word_learning_items[test.cycle % word_learning_items.size];
 
-                word_test_page.action(this, item, reference_time, consecutive_correct);
+                    control.set_status("Test, correct => " + string(consecutive_correct) + "/" + string(UNDER_LIMIT_OF_CONSECUTIVE_CORRECTS) + ", " + word_learning_image_file[item.target_image_filename_index]);
+
+                    word_test_page.action(this, item, reference_time, consecutive_correct);
+                }
+
+                on_event:exit()
+                {
+                    TestOutput output;
+
+                    output.trialnum              = test.cycle+1;       // trial number
+                    output.target_sound_filename = item.target_sound_filename;
+                    output.target_image_filename = word_learning_image_file[item.target_image_filename_index];
+                    
+                    output.top_left_image        = word_test_page.layout.image_on_location(TOP_LEFT);
+                    output.bottom_left_image     = word_test_page.layout.image_on_location(BOTTOM_LEFT);
+                    output.bottom_right_image    = word_test_page.layout.image_on_location(BOTTOM_RIGHT);
+                    output.top_right_image       = word_test_page.layout.image_on_location(TOP_RIGHT);
+                    
+                    output.choice_image_filename = word_test_page.response.value;
+                    
+                    output.rt                    = word_test_page.response.rt;
+                    output.correctness           = word_test_page.response.correctness;
+
+                    word_learning_test_output_append(output);
+
+                    if(word_test_page.response.correctness > 0)
+                        consecutive_correct++;
+                    else
+                        consecutive_correct = 0;
+
+                    if(consecutive_correct < UNDER_LIMIT_OF_CONSECUTIVE_CORRECTS)
+                        test.num_cycles = test.num_cycles+1;
+                }
             }
 
-            on_event:exit()
+            TransientPart check_redo_familiarization
             {
-                TestOutput output;
-
-                output.trialnum              = test.cycle+1;       // trial number
-                output.target_sound_filename = item.target_sound_filename;
-                output.target_image_filename = word_learning_image_file[item.target_image_filename_index];
-                
-                output.top_left_image        = word_test_page.layout.image_on_location(TOP_LEFT);
-                output.bottom_left_image     = word_test_page.layout.image_on_location(BOTTOM_LEFT);
-                output.bottom_right_image    = word_test_page.layout.image_on_location(BOTTOM_RIGHT);
-                output.top_right_image       = word_test_page.layout.image_on_location(TOP_RIGHT);
-                
-                output.choice_image_filename = word_test_page.response.value;
-                
-                output.rt                    = word_test_page.response.rt;
-                output.correctness           = word_test_page.response.correctness;
-
-                word_learning_test_output_append(output);
-
-                if(word_test_page.response.correctness == 1)
-                    consecutive_correct++;
-                else
-                    consecutive_correct = 0;
-
-                if(consecutive_correct < UNDER_LIMIT_OF_CONSECUTIVE_CORRECTS)
-                    test.num_cycles = test.num_cycles+1;
-            }
+                entry()
+                {
+                    if(word_test_page.repeat_familiarization)
+                    {
+                        word_test_page.cleanup();
+                        instructions_familiarization.enter();
+                    }
+                }
+            } 
         }
     }
 }

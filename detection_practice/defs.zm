@@ -12,3 +12,5 @@ HISTORY:
 2012-01-30 TV   Created.
 
 \******************************************************************************/
+
+const int UNDER_LIMIT_OF_CONSECUTIVE_CORRECTS = 5;

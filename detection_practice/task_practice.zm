@@ -54,12 +54,13 @@ Block task_practice
     {
         TestItem        item;   // current item
         TestItem[..]    missed_items;
+        int consecutive_correct;
 
         on_event:entry()
-        {
-            // Randomize test items table.
-            if (shuffle_test_items(prac_items) != OK) terminate;
+        {   
+            consecutive_correct = 0;
 
+            if (shuffle_test_items(prac_items) != OK) terminate;
             setup();
         }
 
@@ -68,46 +69,54 @@ Block task_practice
             num_cycles = prac_items.size;
 
             // Prepare test page: progress bar, feedback and prompt enabled.
-            test_page.setup(num_cycles, true, true);
+            test_page.setup(UNDER_LIMIT_OF_CONSECUTIVE_CORRECTS, true, true);
         }
 
         on_event:exit()
         {
             test_page.cleanup();
+            prac_output_save();
         }
 
 
         Trial trial
         {
-            bool reset = false;
+            TestItem item;
 
             on_event:entry()
             {
-                if(reset)
-                {
-                    practice.cycle = 0;
-                    practice.setup();
-                    reset = false;
-                }
+                if (practice.cycle % prac_items.size == 0)
+                    if (shuffle_test_items(prac_items) != OK) terminate;
 
-                item = prac_items[practice.cycle];
+                item = prac_items[practice.cycle % prac_items.size];
 
-                test_page.action(this, item, reference_time, practice.cycle);
+                test_page.action(this, item, reference_time, consecutive_correct);
             }
 
             on_event:exit()
             {
-                if(missed_current_item())
-                {
-                    prac_items.size = prac_items.size+1;
-                    prac_items[prac_items.size-1] = item;
-                    practice.setup();
-                }
-            }
+                // Add new row to test output table.
+                TestOutput output;
+                output.trialnum = practice.cycle + 1;
+                output.id = item.id;
+                output.block = -1;
+                output.sndfn1 = item.sndfn1;
+                output.sndfn2 = item.sndfn2;
+                output.value = test_page.response.value;
+                output.correctness = test_page.response.correctness;
+                output.rt = test_page.response.rt;
 
-            bool missed_current_item()
-            {
-                return test_page.response.correctness == 0;
+                prac_output_append(output);
+
+                if(test_page.response.correctness > 0)
+                    practice.consecutive_correct++;
+                else
+                    practice.consecutive_correct = 0;
+
+                if(consecutive_correct < UNDER_LIMIT_OF_CONSECUTIVE_CORRECTS)
+                    practice.num_cycles = practice.num_cycles+1;
+                if( consecutive_correct>= UNDER_LIMIT_OF_CONSECUTIVE_CORRECTS)
+                    practice.num_cycles = 0; // Just continue.
             }
         }
     }

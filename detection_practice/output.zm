@@ -30,6 +30,8 @@ record TestOutput
 
     string      handedness;
     string      language;
+
+    real        correctness;          // response value: 0=timeout, 1=correct, -1=incorrect
 }
 
 

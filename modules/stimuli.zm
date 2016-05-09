@@ -35,6 +35,10 @@ WordLearningItem[..] word_learning_items =
     { "target2.wav", 1, },
     { "target3.wav", 2, },
     { "target4.wav", 3, },
+    { "target1_voice2.wav", 0, },
+    { "target2_voice2.wav", 1, },
+    { "target3_voice2.wav", 2, },
+    { "target4_voice2.wav", 3, },
 };
 
 string[..] word_learning_image_file =
@@ -49,7 +53,6 @@ string[..] word_learning_image_file =
 record TestItem
 {
     int         id;             // item id
-    int         block;          // item block
     string      sndfn1;         // stimulus sound filename first interval
     string      sndfn2;         // stimulus sound filename second interval
     int         expected_value;
@@ -58,10 +61,14 @@ record TestItem
 // Practice item table.
 TestItem[..] prac_items =
 {
-    {1, 0, "target1.wav",    "practice1.wav", 0},
-    {2, 0, "target2.wav",    "practice2.wav", 0},
-    {3, 0, "target3.wav",    "practice3.wav", 1},
-    {4, 0, "target4.wav",    "practice4.wav", 1},
+    {1, "target1.wav",    "practice1.wav", 0},
+    {2, "target2.wav",    "practice2.wav", 0},
+    {3, "target3.wav",    "practice3.wav", 1},
+    {4, "target4.wav",    "practice4.wav", 1},
+    {5, "target1.wav",    "practice1.wav", 0},
+    {6, "target2.wav",    "practice2.wav", 0},
+    {7, "target3.wav",    "practice3.wav", 1},
+    {8, "target4.wav",    "practice4.wav", 1},
 };
 
 
@@ -69,28 +76,28 @@ TestItem[..] prac_items =
 //   index: item number
 TestItem[..] test_items =
 {
-    {1, 1, "target1.wav", "test11.wav", -1, },
-    {2, 1, "target1.wav", "test12.wav", -1, },
-    {3, 1, "target1.wav", "test13.wav", -1, },
-    {4, 1, "target1.wav", "test14.wav", -1, },
-    {5, 1, "target1.wav", "test15.wav", -1, },
-    {6, 1, "target1.wav", "test16.wav", -1, },
-    {7, 1, "target2.wav", "test21.wav", -1, },
-    {8, 1, "target2.wav", "test22.wav", -1, },
-    {9, 1, "target2.wav", "test23.wav", -1, },
-    {10, 1, "target2.wav", "test24.wav", -1, },
-    {11, 1, "target2.wav", "test25.wav", -1, },
-    {12, 1, "target2.wav", "test26.wav", -1, },
-    {13, 1, "target3.wav", "test31.wav", -1, },
-    {14, 1, "target3.wav", "test32.wav", -1, },
-    {15, 1, "target3.wav", "test33.wav", -1, },
-    {16, 1, "target3.wav", "test34.wav", -1, },
-    {17, 1, "target3.wav", "test35.wav", -1, },
-    {18, 1, "target3.wav", "test36.wav", -1, },
-    {19, 1, "target4.wav", "test41.wav", -1, },
-    {20, 1, "target4.wav", "test42.wav", -1, },
-    {21, 1, "target4.wav", "test43.wav", -1, },
-    {22, 1, "target4.wav", "test44.wav", -1, },
-    {23, 1, "target4.wav", "test45.wav", -1, },
-    {24, 1, "target4.wav", "test46.wav", -1, },
+    {1, "target1.wav", "test11.wav", -1, },
+    {2, "target1.wav", "test12.wav", -1, },
+    {3, "target1.wav", "test13.wav", -1, },
+    {4, "target1.wav", "test14.wav", -1, },
+    {5, "target1.wav", "test15.wav", -1, },
+    {6, "target1.wav", "test16.wav", -1, },
+    {7, "target2.wav", "test21.wav", -1, },
+    {8, "target2.wav", "test22.wav", -1, },
+    {9, "target2.wav", "test23.wav", -1, },
+    {10, "target2.wav", "test24.wav", -1, },
+    {11, "target2.wav", "test25.wav", -1, },
+    {12, "target2.wav", "test26.wav", -1, },
+    {13, "target3.wav", "test31.wav", -1, },
+    {14, "target3.wav", "test32.wav", -1, },
+    {15, "target3.wav", "test33.wav", -1, },
+    {16, "target3.wav", "test34.wav", -1, },
+    {17, "target3.wav", "test35.wav", -1, },
+    {18, "target3.wav", "test36.wav", -1, },
+    {19, "target4.wav", "test41.wav", -1, },
+    {20, "target4.wav", "test42.wav", -1, },
+    {21, "target4.wav", "test43.wav", -1, },
+    {22, "target4.wav", "test44.wav", -1, },
+    {23, "target4.wav", "test45.wav", -1, },
+    {24, "target4.wav", "test46.wav", -1, },
 };

@@ -35,6 +35,11 @@ import output;
 
 Block task_test
 {
+    on_event:entry()
+    {
+         task_test.num_cycles = 3;
+    }
+
     Part
     {
         on_event:entry()
@@ -46,7 +51,6 @@ Block task_test
     Block test
     {
         TestItem        item;   // current item
-        int             block = -9999;
 
         on_event:entry()
         {
@@ -89,7 +93,7 @@ Block task_test
                 TestOutput output;
                 output.trialnum = test.cycle + 1;
                 output.id = item.id;
-                output.block = test.block;
+                output.block = task_test.cycle + 1;
                 output.sndfn1 = item.sndfn1;
                 output.sndfn2 = item.sndfn2;
                 output.value = test_page.response.value;
@@ -118,6 +122,25 @@ Block task_test
         on_event:entry()
         {
             blank_page.action_auto(this, 500ms);
+        }
+    }
+
+    Part pause
+    {
+        on_event:entry()
+        {
+            pause_page.set_text(
+                GENERAL_PAUSE_TEXT, 
+                true);
+            if(task_test.cycle != task_test.num_cycles-1)
+            {
+                pause_page.action(this);
+                control.button_box.enable_all_buttons(CONTINUE);
+            }
+            else
+                signal(this, CONTINUE);
+
+            
         }
     }
 }

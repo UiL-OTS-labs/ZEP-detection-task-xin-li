@@ -3,6 +3,7 @@ import std_sound_output_device;
 Page word_test_page
 {
     WordLearningItem    item;           // trial control parameters
+    bool repeat_familiarization;
 
     init()
     {
@@ -21,9 +22,14 @@ Page word_test_page
             response.process_hit(TOP_LEFT, event_time);
         else if (input_key == KEY_KP_5)
             response.process_hit(TOP_RIGHT, event_time);
+        else if (input_key == 'r')
+        {
+            repeat_familiarization = true;
+            done(CONTINUE);
+        }
         else if (input_key == KEY_Escape)
         {
-            response.correctness = 1;
+            response.correctness = 9999;
             done(CONTINUE);
         }
         else
@@ -63,6 +69,7 @@ Page word_test_page
             height = 0;     // 0 means as large as possible
             spacing = 50;
             is_visible = true;
+            options = LAYOUT_ATTACH_TOP | LAYOUT_SPREAD_ITEMS_HOR;
 
             button_map.size = 4;
             button_map[TOP_LEFT] = top_buttons.left;
@@ -70,7 +77,27 @@ Page word_test_page
             button_map[BOTTOM_LEFT] = bottom_buttons.left;
             button_map[BOTTOM_RIGHT] = bottom_buttons.right;
         }
- 
+
+        ButtonGadget repeat_familiarization_button 
+        { 
+            init()
+            {
+                text = REPEAT_FAMILIARIZATION_BUTTON_TEXT, true;
+                font_family = TEST_PAGE_BUTTON_FONT_FAMILY;
+                font_size = TEST_PAGE_BUTTON_FONT_SIZE;
+                fill_pattern_color = color:none;
+                text_color = TEST_PAGE_BUTTON_TEXT_COLOR;
+                has_outline = false;
+                size = 750, -1;
+            }
+
+            on_event:activate()
+            {
+                repeat_familiarization = true;
+                done(CONTINUE);
+            }
+        }
+
         HorizontalLayout top_buttons
         {
             init()
@@ -284,7 +311,9 @@ Page word_test_page
     void cleanup()
     {
         layout.reset();
- 
+
+        repeat_familiarization = false;
+
         control.button_box.disable_buttons();
         control.target = null;
     }

@@ -37,7 +37,7 @@ Page test_page
             response.process_hit(layout.buttons.button_responses[RIGHT], event_time);
         else if (input_key == KEY_Escape)
         {
-            test_page.response.correctness = 3.0;
+            test_page.response.correctness = 9999;
             done(CONTINUE);
         }
         else
@@ -409,8 +409,7 @@ Page test_page
 
         // Update status line on control window. Cleared in done() above.
         control.set_status(
-            string(item.id) + "  " +
-            string(item.block) + "  " + 
+            string(item.id) + "  " + 
             string(item.sndfn1) + "  " + 
             string(item.sndfn2) + " " +
             string(item.expected_value));
