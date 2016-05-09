@@ -1,3 +1,5 @@
+//2016-05-09 CvR   created (C.P.A.vanrun@uu.nl)
+
 import std_sound_output_device;
 
 Page word_test_page

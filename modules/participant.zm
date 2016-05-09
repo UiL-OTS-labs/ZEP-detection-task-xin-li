@@ -10,6 +10,7 @@ Provides participant database record field create and check functions.
 
 HISTORY:
 2011-08-27 TV   Created as part of the standard Zep modules.
+2016-05-09 CvR   Adjusted (C.P.A.vanrun@uu.nl)
 
 \******************************************************************************/
 
