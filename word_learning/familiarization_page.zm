@@ -1,0 +1,215 @@
+import std_sound_output_device;
+
+Page familiarization_page
+{
+    WordLearningItem    item;           // trial control parameters
+    bool continue_flag = false;
+
+    init()
+    {
+        fill_pattern_color = TEST_PAGE_COLOR;
+    }
+ 
+ 
+    on_event:key_press()
+    {
+        // Handle left-shift (no) and right-shift (yes).
+        if (input_key == ' ')
+            response.process_hit();
+        else if (input_key == KEY_Escape)
+            done(CONTINUE);
+        else
+            handle_special_key(this, input_key, input_modifiers);
+    }
+ 
+ 
+    on_event:message()
+    {
+        // Process button-box message. See setup() below.
+        response.process_hit();
+    }
+ 
+    
+    SoundChain audio
+    {
+        SoundFile clip {}
+        SoundPlayback playback {}
+
+        dur play(time t)
+        {
+            audio.abort();
+            abort();
+            playback.device = sound_output_device;
+            clip.file = stimuli_dir() + "sounds/" + item.target_sound_filename;
+            start(t);
+            return this.duration;
+        }
+    }
+
+    VerticalLayout layout
+    {
+        init()
+        {
+            spacing = 50;
+            height = 0;     // 0 means as large as possible
+        }
+ 
+        LabelGadget instruction 
+        {
+            init()
+            {
+                text = "If you feel confident about the image-sound matching press a button.";
+                font_family = TEST_PAGE_PROMPT_FONT_FAMILY;
+                font_size = TEST_PAGE_PROMPT_FONT_SIZE;
+                text_color = TEST_PAGE_PROMPT_TEXT_COLOR;
+                hor_alignment = ALIGN_BEGIN;
+            }
+
+        }
+
+        CanvasGadget canvas
+        {
+            init()
+            {
+                fill_pattern_color = TEST_PAGE_COLOR;
+                size = 450, 500;
+                offset_x = width / 2;
+                offset_y = height / 2;
+            }
+
+            ImageShape image
+            {
+                void setup_image(string filename)
+                {
+                    this.image = filename;
+                    x = -floor(image_width/2);
+                    y = -floor(image_height/2);
+                }
+
+                on_event:finish()
+                {
+                    delayed_continue.start(event_time + INTERSTIMULUS_INTERVAL);
+                }
+            }
+        }   
+ 
+        HorizontalLayout buttons
+        {
+            init()
+            {
+                spacing = 50;
+                options = LAYOUT_EQUAL_WIDTH;
+            }
+ 
+            ButtonGadget button1
+            {
+                init()
+                {
+                    text = CONTINUE_BUTTON_TEXT;
+                    font_family = TEST_PAGE_BUTTON_FONT_FAMILY;
+                    font_size = TEST_PAGE_BUTTON_FONT_SIZE;
+                    fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
+                    text_color = TEST_PAGE_BUTTON_TEXT_COLOR;
+                    size = 150, 75;
+                }
+ 
+                on_event:activate()
+                {
+                    response.process_hit();
+                }
+            }
+        }
+        
+ 
+        void start_stimulus(time tref, dur duration)
+        {
+            reset();
+            string image_filename = stimuli_dir() + "images/" + word_learning_image_file[item.target_image_filename_index];
+            canvas.image.setup_image(image_filename);
+            canvas.image.start(tref, duration);
+        }
+    
+        
+        void reset()
+        {
+            full_abort();
+            canvas.stop(now());
+        }
+    }
+ 
+    Timer delayed_continue
+    {
+        on_event:expire()
+        {
+            done(CONTINUE);
+        }
+    }
+
+    // Aborts any ongoing activity on this page and signals the initiator
+    // of the trial that we're done.
+    void done(int msgid)
+    {
+        // Just in case; abort presentation if still active.
+        layout.reset();
+
+        audio.abort();
+
+        signal_target(msgid);   // tell caller we're done
+        target = null;
+ 
+        control.clear_status();
+    }
+ 
+    Response response
+    {
+        void process_hit()
+        {
+            layout.buttons.button1.fill_pattern_color = color:lightslategray;
+            familiarization_page.continue_flag = true;
+        }
+    }
+    //==========================================================================
+ 
+ 
+    // Performs preparatory work required before using this page.
+    void setup(int ntrials=-1, bool fb=false, bool pr=false)
+    {
+        test_page_overlay.setup(this);
+ 
+ 
+        // Enable button-box buttons 0 and 1 for resp. no(0) and yes(1).
+        control.target = this;
+        control.button_box.disable_buttons();
+        control.button_box.enable_all_buttons(0);
+    }
+ 
+ 
+    // Performs cleaning up if necessary.
+    void cleanup()
+    {
+        layout.reset();
+ 
+        control.button_box.disable_buttons();
+        control.target = null;
+    }
+ 
+ 
+    // Starts a trial.
+    void action(Object caller, WordLearningItem it, time tref, int count=-1)
+    {
+
+        // Save the passed trial control parameters.
+        item = it;
+
+        // Show this page (if not yet done) and make tref the trial start time.
+        tref = test_window1.show_test_page(this, tref);
+        
+        // start audio.
+        audio.play(tref+PRE_SHOW_DURATION);
+
+        layout.start_stimulus(tref, PICTURE_PLUS_PICTURE_PRESENTATION_DURATION);
+ 
+        // Remember who to signal when the trial is over.
+        target = caller;
+    }
+}

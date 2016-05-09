@@ -1,0 +1,422 @@
+/******************************************************************************\
+FILE:           test_page.zm
+AUTHOR:         Theo Veenker <theo.veenker@beexy.nl>
+ADAPTED BY:     -
+
+DESCRIPTION:
+
+Provides a page object to show to the participant during test trials.
+It handles presenting the stimulus and recording the participant's response.
+
+
+HISTORY:
+2012-01-30 TV   Created.
+
+\******************************************************************************/
+
+import std_sound_output_device;
+
+
+Page test_page
+{
+    TestItem    item;           // trial control parameters
+
+
+    init()
+    {
+        fill_pattern_color = TEST_PAGE_COLOR;
+    }
+
+
+    on_event:key_press()
+    {
+        // Handle left-shift (same) and right-shift (diff).
+        if (input_key == KEY_Shift_L)
+            response.process_hit(layout.buttons.button_responses[LEFT], event_time);
+        else if (input_key == KEY_Shift_R)
+            response.process_hit(layout.buttons.button_responses[RIGHT], event_time);
+        else if (input_key == KEY_Escape)
+        {
+            test_page.response.correctness = 3.0;
+            done(CONTINUE);
+        }
+        else
+            handle_special_key(this, input_key, input_modifiers);
+    }
+
+
+    on_event:message()
+    { 
+        // Process button-box message. See setup() below.
+        response.process_hit(message_arg, event_time);
+    }
+
+
+    VerticalLayout layout
+    {
+        init()
+        {
+            spacing = 50;
+            height = 0;     // 0 means as large as possible
+        }
+
+
+        CanvasGadget canvas
+        {
+            init()
+            {
+//                fill_pattern_color = TEST_PAGE_STIMULUS_COLOR;
+                size = 450, 100;
+                offset_x = width / 2;
+                offset_y = height / 2;
+            }
+
+
+            CrossShape fixation
+            {
+                init()
+                {
+                    radius = 15;
+                    line_width = 5;
+                    line_pattern_color = color:crimson;
+                }
+            }
+        }
+
+
+        HorizontalLayout buttons
+        {
+            string[..] button_texts;
+            int[..] button_responses;
+
+            void setup_buttons()
+            {
+                button1.text = button_texts[LEFT];
+                button1.button_response = button_responses[LEFT];
+
+                button2.text = button_texts[RIGHT];
+                button2.button_response = button_responses[RIGHT];
+            }
+
+            init()
+            {
+                spacing = 50;
+                options = LAYOUT_EQUAL_WIDTH;
+            }
+
+
+            Timer feedback_provider
+            {
+                ButtonGadget target_button;
+
+                time start_feedback(ButtonGadget button)
+                {
+                    target_button = button;
+                    target_button.fill_pattern_color = color:lightslategray;
+                    target_button.has_outline = true;
+                    start(now() + BUTTON_FEEDBACK_DURATION);
+                    return this.expected_expire_time;
+                }
+
+                on_event:expire()
+                {
+                    target_button.fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
+                    target_button.has_outline = false;
+                }
+            }
+
+            ButtonGadget button1
+            {
+                int button_response = -1;
+
+                init()
+                {
+                    font_family = TEST_PAGE_BUTTON_FONT_FAMILY;
+                    font_size = TEST_PAGE_BUTTON_FONT_SIZE;
+                    fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
+                    text_color = TEST_PAGE_BUTTON_TEXT_COLOR;
+                    has_outline = false;
+                    size = 150, 75;
+                }
+
+
+                on_event:activate()
+                {
+                    response.process_hit(button_response, event_time);
+                }
+            }
+
+
+            ButtonGadget button2
+            {
+                int button_response  = -1;
+
+                init()
+                {
+                    font_family = TEST_PAGE_BUTTON_FONT_FAMILY;
+                    font_size = TEST_PAGE_BUTTON_FONT_SIZE;
+                    fill_pattern_color = TEST_PAGE_BUTTON_COLOR;
+                    text_color = TEST_PAGE_BUTTON_TEXT_COLOR;
+                    has_outline = false;
+                    size = 150, 75;
+                }
+
+
+                on_event:activate()
+                {
+                    response.process_hit(button_response, event_time);
+                }
+            }
+        }
+
+
+        time start_fixation(time t)
+        {
+            // Start fixation cross.
+            canvas.fixation.start(t, FIXATION_DURATION);
+
+            // Return fixation offset time.
+            return canvas.fixation.expected_finish_time;
+        }
+
+
+        void reset()
+        {
+            full_abort();
+            buttons.button1.fill_pattern_color=TEST_PAGE_BUTTON_COLOR;
+            buttons.button1.has_outline = false;
+            buttons.button2.fill_pattern_color=TEST_PAGE_BUTTON_COLOR;
+            buttons.button2.has_outline = false;
+        }
+    }
+
+
+    SoundChain stimulus
+    {
+        // Sound source/producer object.
+        SoundSequence seq
+        {
+            SoundFile clip1 {}
+            SoundFile clip2 {}
+        }
+
+
+        // Sound sink/consumer object.
+        SoundPlayback playback {}
+
+
+        time play(time t)
+        {
+            abort();
+
+            playback.device = sound_output_device;
+            seq.clip1.file = stimuli_dir() + "sounds/" + item.sndfn1;
+            seq.clip2.file = stimuli_dir() + "sounds/" + item.sndfn2;
+            seq.clip1.trailer_duration = INTERSTIMULUS_INTERVAL;
+
+            start(t);
+
+            return expected_finish_time;
+        }
+    }
+
+
+    Response response
+    {
+        // Response data.
+        int     value;          // response value: 0=same, 1=diff, -1=timeout
+        int     rt;             // response time [ms]
+        real    correctness;
+
+        void clear()
+        {
+            value = -1;
+            rt = -9999;
+            correctness = 0;
+        }
+
+
+        void process_hit(int val, time t)
+        {
+            HitType validity = hit(t);
+
+            // Accept the first hit in the response interval and end the 
+            // response interval.
+            if (validity == HIT_VALID)
+            {
+                value = val;
+                rt = int(reaction_time(0));
+
+                time stop_time = now();
+
+                if(layout.buttons.button1.button_response == val)
+                    stop_time = layout.buttons.feedback_provider.start_feedback(layout.buttons.button1);
+                else
+                    stop_time = layout.buttons.feedback_provider.start_feedback(layout.buttons.button2);
+
+
+                ignore_remaining_hits();
+
+                stop(stop_time);
+            }
+            else if (validity == HIT_TOO_EARLY || validity == HIT_TOO_LATE)
+            {
+                // False alarm. Deal with this if desired.
+                println("Participant pressed a button outside the response window!");
+            }
+        }
+
+
+        on_event:finish()
+        {
+            if (num_valid_hits > 0) correctness = ( value == item.expected_value ? 1 : -1);
+
+            if (!test_page_overlay.start_feedback(this, correctness, 
+                    FEEDBACK_DURATION)) 
+                done(CONTINUE);
+        }
+
+
+        on_event:message()
+        {
+            done(CONTINUE);
+        }
+    }
+
+
+    // Aborts any ongoing activity on this page and signals the initiator
+    // of the trial that we're done.
+    void done(int msgid)
+    {
+        // Just in case; abort presentation if still active.
+        layout.reset();
+        stimulus.abort();
+
+        signal_target(msgid);   // tell caller we're done
+        target = null;
+
+        control.clear_status();
+    }
+
+
+    //==========================================================================
+
+
+    // Performs preparatory work required before using this page.
+    void setup(int ntrials=-1, bool fb=false, bool pr=false)
+    {
+        test_page_overlay.setup(this);
+
+        // Enable or disable the progress bar.
+        test_page_overlay.show_progress_bar(ntrials);   // disabled if < 0
+
+        // Enable or disable feedback.
+        test_page_overlay.enable_feedback(fb);          // disabled if false
+
+        // Enable button-box buttons 0 and 1 for resp. same(0) and diff(1).
+        control.target = this;
+        control.button_box.disable_buttons();
+        
+        // Corrections for dexterity (i.e. left or right-handiness)
+        if(experiment.LEFTSIDE_DETECT)
+            setup_left_button_as_detect_option();
+        else
+            setup_right_button_as_detect_option();
+            
+        test_page_overlay.show_prompt(pr ? 
+            OVERLAY_PRACTICE_DETECTION : "", 
+            true);
+    }
+
+    void setup_left_button_as_detect_option()
+    {
+        int left_code   = 1;
+        int right_code  = 0;
+        setup_button_with_codes(left_code, right_code);
+        
+        layout.buttons.button_texts.size = 2;
+        layout.buttons.button_texts[LEFT] = YES_BUTTON_TEXT;
+        layout.buttons.button_texts[RIGHT] = NO_BUTTON_TEXT;
+
+        layout.buttons.setup_buttons();
+    }
+
+    void setup_right_button_as_detect_option()
+    {
+        int left_code   = 0;
+        int right_code  = 1;
+        setup_button_with_codes(left_code, right_code);
+
+        layout.buttons.button_texts.size = 2;
+        layout.buttons.button_texts[LEFT] = NO_BUTTON_TEXT;
+        layout.buttons.button_texts[RIGHT] = YES_BUTTON_TEXT;
+
+        layout.buttons.setup_buttons();
+    }
+
+    void setup_button_with_codes(int left_code, int right_code)
+    {
+        layout.buttons.button_responses.size = 2;
+        layout.buttons.button_responses[LEFT] = left_code;
+        layout.buttons.button_responses[RIGHT] = right_code;
+
+        control.button_box.enable_button(0, left_code);
+        control.button_box.enable_button(1, left_code);
+        control.button_box.enable_button(2, right_code); 
+        control.button_box.enable_button(3, right_code); 
+    }
+
+    // Performs cleaning up if necessary.
+    void cleanup()
+    {
+        test_page_overlay.cleanup();
+
+        control.button_box.disable_buttons();
+        control.target = null;
+    }
+
+
+    // Starts a trial.
+    void action(Object caller, TestItem it, time tref, int count=-1)
+    {
+        // Save the passed trial control parameters.
+        item = it;
+
+
+        // Show this page (if not yet done) and make tref the trial start time.
+        tref = test_window1.show_test_page(this, tref + INTERTRIAL_INTERVAL);
+
+
+        // Reset response data.
+        response.clear();
+
+
+        // Start fixation symbol.
+        time fixoffset = layout.start_fixation(tref);
+
+
+        // Start stimulus at fixation offset.
+        time stimoffset = stimulus.play(fixoffset);
+
+
+        // Response interval starts at stimulus offset.
+        response.start(stimoffset, RESPONSE_DURATION);
+
+
+        // Update progress counter (if enabled).
+        test_page_overlay.update_progress_bar(count);
+
+
+        // Update status line on control window. Cleared in done() above.
+        control.set_status(
+            string(item.id) + "  " +
+            string(item.block) + "  " + 
+            string(item.sndfn1) + "  " + 
+            string(item.sndfn2) + " " +
+            string(item.expected_value));
+
+
+        // Remember who to signal when the trial is over.
+        target = caller;
+    }
+}

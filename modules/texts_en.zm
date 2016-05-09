@@ -1,0 +1,79 @@
+/******************************************************************************\
+FILE:           std_texts_en.zm
+AUTHOR:         Theo Veenker <theo.veenker@beexy.nl>
+ADAPTED BY:     -
+
+DESCRIPTION:
+
+Defines texts on buttons and other graphic elements.
+English version.
+
+
+HISTORY:
+2009-12-02 TV   Created as part of the standard Zep modules.
+
+\******************************************************************************/
+
+
+// Button texts.
+const string    CONTINUE_BUTTON_TEXT            = "Continue";
+const string    NEXT_BUTTON_TEXT                = "Next";
+const string    REPEAT_BUTTON_TEXT              = "Repeat";
+const string    YES_BUTTON_TEXT                 = "Yes";
+const string    NO_BUTTON_TEXT                  = "No";
+const string    TRUE_BUTTON_TEXT                = "True";
+const string    FALSE_BUTTON_TEXT               = "False";
+const string    CORRECT_BUTTON_TEXT             = "Correct";
+const string    INCORRECT_BUTTON_TEXT           = "Incorrect";
+const string    FIRST_BUTTON_TEXT               = "First";
+const string    SECOND_BUTTON_TEXT              = "Second";
+
+const string    EQUAL_BUTTON_TEXT               = "Same";
+const string    UNEQUAL_BUTTON_TEXT             = "Different";
+
+// Other texts.
+const string    WELCOME_TEXT                    = "Welcome";
+const string    THANK_YOU_TEXT                  = "End of Experiment\n\nThank you very much!";
+
+const string    WORD_LEARNING_TEST_INSTRUCTIONS = "TODO: Word learning TEST instructions";
+
+const string    WORD_LEARNING_FAMILIARIZATION_INSTRUCTIONS = "TODO: Word learning FAMILIARIZATION instructions";
+
+const string	OVERLAY_PRACTICE_DETECTION = "did you hear the first word in the second fragment?";
+
+string 			PRACTICE_DETECTION_INSTRUCTION; // SEE at setup_string()
+
+const string    END_OF_PRACTICE_DETECTION_INSTRUCTION = "End of the practice part.\n"
+                "\n"
+                "If you have any questions at this moment please ask the "
+                "experimenter now.\n"
+                "\n"
+//                "<i>Hit Enter when ready to proceed.</i>", 
+                "<i>Hit any button on the button-box when ready to "
+                "proceed.</i>";
+
+void setup_strings()
+{
+	string yes_button_side = experiment.LEFTSIDE_DETECT ? "left": "right";
+    string no_button_side = !experiment.LEFTSIDE_DETECT ? "left": "right";
+
+    PRACTICE_DETECTION_INSTRUCTION = "Well done!\n"
+                "We will be using the <i>button-box</i> for the next part of the experiment. \n\n"
+
+                "In this part you are going to hear word fragments over the headphones. "
+                "The word fragments come in pairs. Your task is to indicate "
+                "for each pair as quickly as possible whether you think the "
+                "first word is repeated in the second fragment. \n\n"
+
+                "To respond with <b>YES</b> on the button-box press the button on the "
+                + yes_button_side + " side. \n\n"
+
+                "To respond with <b>NO</b> on the button-box press the button on the "
+                + no_button_side + " side. \n\n"
+
+                "\n"
+                "First we shall do a short practice.\n"
+                "\n"
+//                "<i>Hit Enter when ready to start.</i>", 
+                "<i>Hit any button on the button-box when ready to start.</i>";
+}

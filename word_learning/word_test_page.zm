@@ -1,0 +1,334 @@
+import std_sound_output_device;
+
+Page word_test_page
+{
+    WordLearningItem    item;           // trial control parameters
+
+    init()
+    {
+        fill_pattern_color = TEST_PAGE_COLOR;
+    }
+ 
+ 
+    on_event:key_press()
+    {
+        // Handle left-shift (no) and right-shift (yes).
+        if (input_key == KEY_KP_1)
+            response.process_hit(BOTTOM_LEFT, event_time);
+        else if (input_key == KEY_KP_2)
+            response.process_hit(BOTTOM_RIGHT, event_time);
+        else if (input_key == KEY_KP_4)
+            response.process_hit(TOP_LEFT, event_time);
+        else if (input_key == KEY_KP_5)
+            response.process_hit(TOP_RIGHT, event_time);
+        else if (input_key == KEY_Escape)
+        {
+            response.correctness = 1;
+            done(CONTINUE);
+        }
+        else
+            handle_special_key(this, input_key, input_modifiers);
+    }
+ 
+ 
+    on_event:message()
+    {
+        // Process button-box message. See setup() below.
+        response.process_hit(cast<Location>(message_arg), event_time);
+    }
+ 
+    
+    SoundChain audio
+    {
+        SoundFile clip {}
+        SoundPlayback playback {}
+
+        time play(time t)
+        {
+            audio.abort();
+            abort();
+            playback.device = sound_output_device;
+            clip.file = stimuli_dir() + "sounds/" + item.target_sound_filename;
+            start(t);
+            return this.expected_start_time;
+        }
+    }
+
+   VerticalLayout layout
+    {
+        ButtonGadget[..] button_map;
+
+        init()
+        {
+            height = 0;     // 0 means as large as possible
+            spacing = 50;
+            is_visible = true;
+
+            button_map.size = 4;
+            button_map[TOP_LEFT] = top_buttons.left;
+            button_map[TOP_RIGHT] = top_buttons.right;
+            button_map[BOTTOM_LEFT] = bottom_buttons.left;
+            button_map[BOTTOM_RIGHT] = bottom_buttons.right;
+        }
+ 
+        HorizontalLayout top_buttons
+        {
+            init()
+            {
+                spacing = 50;
+                options = LAYOUT_ATTACH_BOTTOM;
+            }
+
+            ButtonGadget left 
+            { 
+                on_event:activate()
+                {
+                    response.process_hit(TOP_LEFT, event_time);
+                }
+            }
+
+            ButtonGadget right {
+                on_event:activate()
+                {
+                    response.process_hit(TOP_RIGHT, event_time);
+                }
+            }
+        }
+        
+        HorizontalLayout bottom_buttons
+        {
+            init()
+            {
+                spacing = 50;
+                options = LAYOUT_ATTACH_TOP;
+            }
+
+            ButtonGadget left 
+            { 
+                on_event:activate()
+                {
+                    response.process_hit(BOTTOM_LEFT, event_time);
+                }
+            }
+            
+            ButtonGadget right {
+                on_event:activate()
+                {
+                    response.process_hit(BOTTOM_RIGHT, event_time);
+                }
+            }
+        }
+
+        string image_on_location(Location loc)
+        {
+            string full_path = button_map[loc].fill_pattern_image;
+            int number_of_tokens = count_keys(full_path,"/");
+            string result = token(full_path,"/",number_of_tokens);
+            return result;
+        }
+
+        void setup_button(Location loc)
+        {
+            ButtonGadget target_button = button_map[loc];
+            string imagefilename = word_learning_image_file[loc];
+
+            target_button.has_outline = false;
+            target_button.fill_pattern_image = stimuli_dir() + "/images/" + imagefilename;
+            target_button.width = image_width(target_button.fill_pattern_image);
+            target_button.height = image_height(target_button.fill_pattern_image);
+        }
+
+        time start_stimulus(time tref)
+        {
+            reset();
+
+            setup_button(TOP_LEFT);
+            setup_button(TOP_RIGHT);
+            setup_button(BOTTOM_LEFT);
+            setup_button(BOTTOM_RIGHT);
+
+            layout.start(tref);
+
+            return layout.expected_start_time;
+        }
+        
+        void selection_conformation_feedback(Location loc)
+        {
+            button_map[loc].has_outline = true;
+        }
+
+        void reset()
+        {
+            layout.full_abort();
+            int index = 0;
+            while(index < button_map.size)
+            {
+                button_map[index].has_outline = false;
+                index++;
+            }
+        }
+    }
+ 
+    
+    Timer delayed_continue
+    {
+        on_event:expire()
+        {
+            done(CONTINUE);
+        }
+    }
+
+    // Aborts any ongoing activity on this page and signals the initiator
+    // of the trial that we're done.
+    void done(int msgid)
+    {
+        // Just in case; abort presentation if still active.
+        layout.reset();
+ 
+        signal_target(msgid);   // tell caller we're done
+        target = null;
+ 
+        control.clear_status();
+    }
+ 
+    Response response
+    {
+        // Response data.
+        string value;          // response value: 0 =same, 1=diff, -1=timeout
+        int     rt;             // response time [ms]
+        real    correctness;
+
+        void clear()
+        {
+            value = "missing";
+            rt = -9999;
+            correctness = 0;
+        }
+
+
+        void process_hit(Location val, time t)
+        {
+            HitType validity = hit(t);
+
+
+            // Accept the first hit in the response interval and end the 
+            // response interval.
+            if (validity == HIT_VALID)
+            {
+                layout.selection_conformation_feedback(val);
+                
+                value = layout.image_on_location(val);
+                
+                rt = int(reaction_time(0));
+
+                ignore_remaining_hits();
+
+                stop();
+            }
+            else if (validity == HIT_TOO_EARLY || validity == HIT_TOO_LATE)
+            {
+                // False alarm. Deal with this if desired.
+                println("Participant pressed a button outside the response window!");
+            }
+        }
+
+
+        on_event:finish()
+        {
+            bool correct = value == word_learning_image_file[item.target_image_filename_index];
+
+            if (num_valid_hits > 0) correctness = correct ? 1 : -1;
+
+            if (!test_page_overlay.start_feedback(this, correctness, 
+                    FEEDBACK_DURATION)) 
+                done(CONTINUE);
+        }
+
+
+        on_event:message()
+        {
+            done(CONTINUE);
+        }
+    }
+    //==========================================================================
+ 
+ 
+    // Performs preparatory work required before using this page.
+    void setup(int ntrials=-1, bool fb=false, bool pr=false)
+    {
+        
+        test_page_overlay.setup(this);
+
+        // Enable or disable the progress bar.
+        test_page_overlay.show_progress_bar(ntrials);   // disabled if < 0
+
+        // Enable or disable feedback.
+        test_page_overlay.enable_feedback(fb);          // disabled if false
+        
+            
+        test_page_overlay.show_prompt(pr ? 
+            "Which sound did you hear?" : "", 
+            true);
+ 
+        // Enable button-box buttons 0 and 1 for resp. no(0) and yes(1).
+        control.target = this;
+        control.button_box.disable_buttons();
+        control.button_box.enable_button(0, TOP_LEFT);
+        control.button_box.enable_button(1, BOTTOM_LEFT);
+        control.button_box.enable_button(2, BOTTOM_RIGHT);
+        control.button_box.enable_button(3, TOP_RIGHT);
+    }
+ 
+ 
+    // Performs cleaning up if necessary.
+    void cleanup()
+    {
+        layout.reset();
+ 
+        control.button_box.disable_buttons();
+        control.target = null;
+    }
+ 
+ 
+    // Starts a trial.
+    void action(Object caller, WordLearningItem it, time tref, int count=-1)
+    {
+
+        // Save the passed trial control parameters.
+        item = it;
+
+
+        // Show this page (if not yet done) and make tref the trial start time.
+        tref = test_window1.show_test_page(this, tref);
+
+        // Reset response data.
+        response.clear();
+
+        // Start stimulus at fixation offset.
+        time stimoffset = layout.start_stimulus(tref);
+
+        // start audio.
+        time soundoffset = audio.play(stimoffset+INTERAUDIO_INTERVAL);
+
+
+        // Response interval starts at stimulus offset.
+        response.start(soundoffset, RESPONSE_DURATION);
+
+
+        // Update progress counter (if enabled).
+        test_page_overlay.update_progress_bar(count);
+
+
+        // Remember who to signal when the trial is over.
+        target = caller;
+
+        // Save the passed trial control parameters.
+        item = it;
+
+        // Show this page (if not yet done) and make tref the trial start time.
+        tref = test_window1.show_test_page(this, tref);
+
+        // Remember who to signal when the trial is over.
+        target = caller;
+    }
+}

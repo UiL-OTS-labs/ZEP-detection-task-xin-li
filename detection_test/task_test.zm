@@ -1,0 +1,131 @@
+/******************************************************************************\
+FILE:           task.zm
+AUTHOR:         Theo Veenker <theo.veenker@beexy.nl>
+ADAPTED BY:     -
+
+DESCRIPTION:
+
+Implementation of task: Same-Different Auditory Discrimination (AX)
+See readme.txt for more information.
+
+
+Global structure of this experiment phase:
+
+  - instructions
+
+  - practice part
+      trial
+
+  - pause
+
+  - test part
+      trial
+
+
+HISTORY:
+2012-01-30 TV   Created.
+
+\******************************************************************************/
+
+requires 1.12;
+
+import defs;
+import shuffle;
+import output;
+
+Block task_test
+{
+    Part
+    {
+        on_event:entry()
+        {
+            blank_page.action_auto(this, 500ms);
+        }
+    }
+
+    Block test
+    {
+        TestItem        item;   // current item
+        int             block = -9999;
+
+        on_event:entry()
+        {
+            // Randomize test items table.
+            if (shuffle_test_items(test_items) != OK) terminate;
+
+            setup();
+        }
+
+        void setup()
+        {   
+            test.num_cycles = test_items.size;
+
+            // Prepare test page: progress bar enabled, feedback and prompt 
+            // disabled.
+            test_page.setup(num_cycles, true, false);
+            test_page_overlay.only_show_question();
+        }
+
+        on_event:exit()
+        {
+            test_page.cleanup();
+
+            // Save test output table as CSV file.
+            test_output_save();
+        }
+
+
+        Trial trial
+        {
+            on_event:entry()
+            {
+                item = test_items[test.cycle];
+                test_page.action(this, item, reference_time, test.cycle);
+            }
+
+            on_event:exit()
+            {
+                // Add new row to test output table.
+                TestOutput output;
+                output.trialnum = test.cycle + 1;
+                output.id = item.id;
+                output.block = test.block;
+                output.sndfn1 = item.sndfn1;
+                output.sndfn2 = item.sndfn2;
+                output.value = test_page.response.value;
+                output.correctness = test_page.response.correctness;
+                output.rt = test_page.response.rt;
+
+                test_output_append(output);
+
+                if(missed_current_item())
+                {
+                    test_items.size = test_items.size+1;
+                    test_items[test_items.size-1] = item;
+                    test.setup();
+                }
+            }
+
+            bool missed_current_item()
+            {
+                return test_page.response.correctness == 0;
+            }
+        }
+    }
+
+    Part
+    {
+        on_event:entry()
+        {
+            blank_page.action_auto(this, 500ms);
+        }
+    }
+}
+
+
+void action(Part caller)
+{
+    // Activate the task. When the task is done, the registered caller
+    // (c.q. the main experiment object) will automatically be signalled.
+    task_test.enter(caller);
+}

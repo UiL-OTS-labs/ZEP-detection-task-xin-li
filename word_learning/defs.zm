@@ -1,0 +1,22 @@
+/******************************************************************************\
+FILE:           defs.zm
+AUTHOR:         Theo Veenker <theo.veenker@beexy.nl>
+ADAPTED BY:     -
+
+DESCRIPTION:
+
+Defines experiment settings such as for trial timing.
+
+
+HISTORY:
+2012-01-30 TV   Created.
+
+\******************************************************************************/
+import globaldefs;
+
+const dur PICTURE_PLUS_PICTURE_PRESENTATION_DURATION = dur(GLOBAL_REFRESH_RATE*60);
+const dur PRE_SHOW_DURATION = dur(GLOBAL_REFRESH_RATE*30);
+
+const dur INTERAUDIO_INTERVAL = 500ms;
+
+const int UNDER_LIMIT_OF_CONSECUTIVE_CORRECTS = 5;

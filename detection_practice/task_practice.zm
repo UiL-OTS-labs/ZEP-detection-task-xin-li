@@ -1,0 +1,143 @@
+/******************************************************************************\
+FILE:           task.zm
+AUTHOR:         Theo Veenker <theo.veenker@beexy.nl>
+ADAPTED BY:     -
+
+DESCRIPTION:
+
+Implementation of task: Same-Different Auditory Discrimination (AX)
+See readme.txt for more information.
+
+
+Global structure of this experiment phase:
+
+  - instructions
+
+  - practice part
+      trial
+
+  - pause
+
+  - test part
+      trial
+
+
+HISTORY:
+2012-01-30 TV   Created.
+
+\******************************************************************************/
+
+requires 1.12;
+
+import defs;
+import shuffle;
+import output;
+
+Block task_practice
+{
+    Part instructions
+    {
+        on_event:entry()
+        {
+//            pause_page.set_text_size(1000, 600);
+            pause_page.set_text(
+                PRACTICE_DETECTION_INSTRUCTION, 
+                true);
+
+            pause_page.action(this);
+            control.button_box.enable_all_buttons(CONTINUE);
+        }
+    }
+
+
+    Block practice
+    {
+        TestItem        item;   // current item
+        TestItem[..]    missed_items;
+
+        on_event:entry()
+        {
+            // Randomize test items table.
+            if (shuffle_test_items(prac_items) != OK) terminate;
+
+            setup();
+        }
+
+        void setup()
+        {  
+            num_cycles = prac_items.size;
+
+            // Prepare test page: progress bar, feedback and prompt enabled.
+            test_page.setup(num_cycles, true, true);
+        }
+
+        on_event:exit()
+        {
+            test_page.cleanup();
+        }
+
+
+        Trial trial
+        {
+            bool reset = false;
+
+            on_event:entry()
+            {
+                if(reset)
+                {
+                    practice.cycle = 0;
+                    practice.setup();
+                    reset = false;
+                }
+
+                item = prac_items[practice.cycle];
+
+                test_page.action(this, item, reference_time, practice.cycle);
+            }
+
+            on_event:exit()
+            {
+                if(missed_current_item())
+                {
+                    prac_items.size = prac_items.size+1;
+                    prac_items[prac_items.size-1] = item;
+                    practice.setup();
+                }
+            }
+
+            bool missed_current_item()
+            {
+                return test_page.response.correctness == 0;
+            }
+        }
+    }
+
+    Part
+    {
+        on_event:entry()
+        {
+            blank_page.action_auto(this, 500ms);
+        }
+    }
+
+    Part pause
+    {
+        on_event:entry()
+        {
+            pause_page.set_text(
+                END_OF_PRACTICE_DETECTION_INSTRUCTION, 
+                true);
+
+            pause_page.action(this);
+            control.button_box.enable_all_buttons(CONTINUE);
+        }
+    }
+}
+
+
+void action(Part caller)
+{
+    // Activate the task. When the task is done, the registered caller
+    // (c.q. the main experiment object) will automatically be signalled.
+    task_practice.enter(caller);
+}

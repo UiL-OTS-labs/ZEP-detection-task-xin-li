@@ -1,0 +1,13 @@
+
+enum Location
+	{
+		A,
+		B,
+		C,
+	}
+
+start()
+{
+	int i = 1;
+	Location loc = cast<Location>(i);
+}

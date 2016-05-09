@@ -1,0 +1,81 @@
+/******************************************************************************\
+FILE:           output.zm
+AUTHOR:         Theo Veenker <theo.veenker@beexy.nl>
+ADAPTED BY:     -
+
+DESCRIPTION:
+
+Defines the formats of output table(s).
+
+
+HISTORY:
+2012-01-30 TV   Created.
+
+\******************************************************************************/
+
+
+// Test output table record.
+record FamilOutput
+{
+    int         trialnum;       // trial number
+
+    string      target_sound_filename;
+    string      target_image_filename;
+}
+
+record TestOutput
+{
+    int         trialnum;       // trial number
+    
+    string      target_sound_filename;
+    string      target_image_filename;
+
+    string      top_left_image;
+    string      bottom_left_image;
+    string      bottom_right_image;
+    string      top_right_image;
+
+    string      choice_image_filename;
+
+    int         rt;
+    real        correctness;          // response value: 0=timeout, 1=correct, -1=incorrect
+}
+
+
+// Test output table.
+FamilOutput[..] word_learning_famil_output;
+TestOutput[..] word_learning_test_output;
+
+//------------------------------------------------------------------------------
+
+
+// Appends one row of data to test output table.
+void word_learning_famil_output_append(FamilOutput data)
+{
+    word_learning_famil_output.size = word_learning_famil_output.size + 1;
+    word_learning_famil_output[word_learning_famil_output.size-1] = data;
+}
+
+// Appends one row of data to test output table.
+void word_learning_test_output_append(TestOutput data)
+{
+    word_learning_test_output.size = word_learning_test_output.size + 1;
+    word_learning_test_output[word_learning_test_output.size-1] = data;
+}
+
+
+// Writes test output table contents to CSV file and clears the table.
+void word_learning_output_save()
+{
+    // Append table to CSV file (create if non-existent). The filename format
+    // is: <dbname>/<dbnum>/<expname>/<phasename>/ses<sesid>-<tblnum>.csv
+    string fn = expdb.experiment.session.create_table(namespace_name, 1);
+    word_learning_famil_output.append(fn, namespace_name + ": famil results");
+    word_learning_famil_output.size = 0;
+
+    // Append table to CSV file (create if non-existent). The filename format
+    // is: <dbname>/<dbnum>/<expname>/<phasename>/ses<sesid>-<tblnum>.csv
+    fn = expdb.experiment.session.create_table(namespace_name, 2);
+    word_learning_test_output.append(fn, namespace_name + ": test results");
+    word_learning_test_output.size = 0;
+}

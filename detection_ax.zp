@@ -1,0 +1,130 @@
+/******************************************************************************\
+FILE:           discr_ax.zp
+AUTHOR:         Theo Veenker <theo.veenker@beexy.nl>
+ADAPTED BY:     -
+
+DESCRIPTION:
+
+Implementation of task: Same-Different Auditory Discrimination (AX)
+
+For more information on the discr_ax task see readme.txt in the 
+test folder.
+
+
+Global structure of experiment:
+
+  - welcome
+
+  - phase 1 (see subfolder test)
+
+  - thankyou
+
+
+HISTORY:
+2013-07-03 TV   Created.
+
+\******************************************************************************/
+
+requires 1.12;
+
+import std_windows1;
+import texts_en;
+import std_entry_page1;
+import std_exit_page1;
+import std_pause_page;
+import std_blank_page;
+
+import word_learning::task_word_learning;
+import detection_practice::task_practice;
+import detection_test::task_test;
+
+import globaldefs;
+import test_page;
+import stimuli;
+
+enum Side {
+    LEFT,
+    RIGHT
+}
+
+Experiment experiment
+{
+    bool LEFTSIDE_DETECT = true;
+
+    on_event:entry()
+    {
+        if(expdb.participant.get_enum_field(HANDEDNESS_DESCRIPTION) == "right")
+            LEFTSIDE_DETECT = true;
+        else
+            LEFTSIDE_DETECT = false;
+        
+        setup_strings();
+
+        control.button_box.open("/dev/ttyACM0");
+        show_test_windows();
+    }
+
+
+    on_event:message()
+    {
+        // On Ctrl+F4 jump unconditionally to the thank-you part.
+        if (message_sender == control && message_arg == SYS_STOP)
+        {
+            control.mark_experiment_aborted();
+            thankyou.enter();
+        }
+    }
+
+
+    Part welcome
+    {
+        on_event:entry()
+        {
+            entry_page.set_text(WELCOME_TEXT);
+            entry_page.action(this, 0s);
+        }
+    }
+
+    Part word_learning_phase
+    {
+        on_event:entry()
+        {
+            word_learning::action(this);
+        }
+    }
+
+    Part detection_practice_phase
+    {
+        on_event:entry()
+        {
+            detection_practice::action(this);
+        }
+    }
+
+    Part detection_test_phase
+    {
+        on_event:entry()
+        {   
+            detection_test::action(this);
+        }
+    }
+
+     Part
+    {
+        on_event:entry()
+        {
+            blank_page.action_auto(this, 500ms);
+        }
+    }
+
+    Part thankyou
+    {
+        on_event:entry()
+        {
+            control.end_experiment();   // Check-in session.
+
+            exit_page.set_text(THANK_YOU_TEXT);
+            exit_page.action(this, 10s);
+        }
+    }
+}

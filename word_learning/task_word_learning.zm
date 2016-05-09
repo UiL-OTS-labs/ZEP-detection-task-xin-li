@@ -1,0 +1,190 @@
+requires 1.12;
+
+import defs;
+import shuffle;
+import output;
+import familiarization_page;
+import word_test_page;
+
+Block task_word_learning 
+{
+    on_event:entry()
+    {
+        //Image and sound should be independent. This is where we do this.
+        word_learning_image_file.shuffle(0, -1);
+    }
+
+    on_event:exit()
+    {
+        word_learning_output_save();
+    }
+
+    Part instructions_familiarization
+    {
+        on_event:entry() 
+        {
+//            pause_page.set_text_size(1000, 600);
+
+            //TODO: insert instructions
+            pause_page.set_text(
+                WORD_LEARNING_FAMILIARIZATION_INSTRUCTIONS, 
+                true);
+
+            pause_page.action(this);
+            control.button_box.enable_all_buttons(CONTINUE);
+        }
+    }
+
+    Part
+    {
+        on_event:entry()
+        {
+            blank_page.action_auto(this, 500ms);
+        }
+    }
+
+    Block familiarization
+    {
+
+        on_event:entry()
+        {
+
+            familiarization_page.setup();
+        }
+
+        on_event:exit()
+        {
+            familiarization_page.cleanup();
+        }
+
+        Trial trial
+        {
+            WordLearningItem item;
+
+            on_event:entry()
+            {
+                if (familiarization.cycle % word_learning_items.size == 0) // prevent an easy repeat of 3 or more.
+                    if (shuffle_test_items(word_learning_items) != OK) terminate;
+
+                control.set_status("familiarization: " + string(familiarization.cycle+1));
+                item = word_learning_items[familiarization.cycle % word_learning_items.size];
+                familiarization_page.action(this, item, reference_time, familiarization.cycle);
+            }
+
+            on_event:exit()
+            {
+                FamilOutput output;
+
+                output.trialnum              = familiarization.cycle+1;       // trial number
+                output.target_sound_filename = item.target_sound_filename;
+                output.target_image_filename = word_learning_image_file[item.target_image_filename_index];
+
+                word_learning_famil_output_append(output);
+
+                if(!familiarization_page.continue_flag)
+                    familiarization.num_cycles = familiarization.num_cycles+1;
+            }
+        }
+    }
+
+    Part
+    {
+        on_event:entry()
+        {
+            blank_page.action_auto(this, 500ms);
+        }
+    }
+
+    Part instructions_test
+    {
+        on_event:entry() 
+        {
+//            pause_page.set_text_size(1000, 600);
+
+            //TODO: insert instructions
+            pause_page.set_text(
+                WORD_LEARNING_TEST_INSTRUCTIONS, 
+                true);
+
+            pause_page.action(this);
+            control.button_box.enable_all_buttons(CONTINUE);
+        }
+    }
+
+    Part
+    {
+        on_event:entry()
+        {
+            blank_page.action_auto(this, 500ms);
+        }
+    }
+
+    Block test
+    {
+        int consecutive_correct = 0;
+
+        on_event:entry()
+        {
+            word_test_page.setup(UNDER_LIMIT_OF_CONSECUTIVE_CORRECTS, true);
+        }
+
+        on_event:exit()
+        {
+            word_test_page.cleanup();
+        }
+
+        Trial trial
+        {
+            WordLearningItem item;
+
+            on_event:entry()
+            {
+                if (test.cycle % word_learning_items.size == 0) // prevent an easy repeat of 3 or more.
+                    if (shuffle_test_items(word_learning_items) != OK) terminate;
+ 
+                item = word_learning_items[test.cycle % word_learning_items.size];
+
+                control.set_status("Test, correct => " + string(consecutive_correct) + "/" + string(UNDER_LIMIT_OF_CONSECUTIVE_CORRECTS) + ", " + word_learning_image_file[item.target_image_filename_index]);
+
+                word_test_page.action(this, item, reference_time, consecutive_correct);
+            }
+
+            on_event:exit()
+            {
+                TestOutput output;
+
+                output.trialnum              = test.cycle+1;       // trial number
+                output.target_sound_filename = item.target_sound_filename;
+                output.target_image_filename = word_learning_image_file[item.target_image_filename_index];
+                
+                output.top_left_image        = word_test_page.layout.image_on_location(TOP_LEFT);
+                output.bottom_left_image     = word_test_page.layout.image_on_location(BOTTOM_LEFT);
+                output.bottom_right_image    = word_test_page.layout.image_on_location(BOTTOM_RIGHT);
+                output.top_right_image       = word_test_page.layout.image_on_location(TOP_RIGHT);
+                
+                output.choice_image_filename = word_test_page.response.value;
+                
+                output.rt                    = word_test_page.response.rt;
+                output.correctness           = word_test_page.response.correctness;
+
+                word_learning_test_output_append(output);
+
+                if(word_test_page.response.correctness == 1)
+                    consecutive_correct++;
+                else
+                    consecutive_correct = 0;
+
+                if(consecutive_correct < UNDER_LIMIT_OF_CONSECUTIVE_CORRECTS)
+                    test.num_cycles = test.num_cycles+1;
+            }
+        }
+    }
+}
+
+
+void action(Part caller)
+{
+    // Activate the task. When the task is done, the registered caller
+    // (c.q. the main experiment object) will automatically be signalled.
+    task_word_learning.enter(caller);
+}
