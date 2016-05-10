@@ -54,9 +54,9 @@ Experiment experiment
     on_event:entry()
     {
         if(expdb.participant.get_enum_field(HANDEDNESS_DESCRIPTION) == "right")
-            LEFTSIDE_DETECT = true;
-        else
             LEFTSIDE_DETECT = false;
+        else
+            LEFTSIDE_DETECT = true;
         
         setup_strings();
 
