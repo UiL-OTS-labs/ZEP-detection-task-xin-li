@@ -50,13 +50,13 @@ Block task_word_learning
 
         on_event:entry()
         {
-
             familiarization_page.setup();
         }
 
         on_event:exit()
         {
             familiarization_page.cleanup();
+            familiarization.num_cycles = 0;
         }
 
         Trial trial
