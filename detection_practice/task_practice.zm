@@ -118,9 +118,6 @@ Block task_practice
                     practice.num_cycles = practice.num_cycles+1;
                 if( consecutive_correct>= UNDER_LIMIT_OF_CONSECUTIVE_CORRECTS)
                     practice.num_cycles = 0; // Just continue.
-
-                if(practice.num_cycles % prac_items.size-1 == 0)
-                    if (shuffle_test_items(prac_items) != OK) terminate;
             }
         }
     }
