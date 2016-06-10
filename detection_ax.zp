@@ -1,27 +1,13 @@
 /******************************************************************************\
-FILE:           discr_ax.zp
-AUTHOR:         Theo Veenker <theo.veenker@beexy.nl>
+FILE:           detection_ax.zp
+AUTHOR:         Chris van Run <C.P.A.vanrun@uu.nl>
 ADAPTED BY:     -
 
 DESCRIPTION:
 
-Implementation of task: Same-Different Auditory Discrimination (AX)
-
-For more information on the discr_ax task see readme.txt in the 
-test folder.
-
-
-Global structure of experiment:
-
-  - welcome
-
-  - phase 1 (see subfolder test)
-
-  - thankyou
-
 
 HISTORY:
-2013-07-03 TV   Created.
+2016-06-10 Chris van Run Adjusted.
 
 \******************************************************************************/
 
