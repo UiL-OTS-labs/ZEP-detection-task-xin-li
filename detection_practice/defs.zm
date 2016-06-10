@@ -14,4 +14,4 @@ HISTORY:
 
 \******************************************************************************/
 
-const int UNDER_LIMIT_OF_CONSECUTIVE_CORRECTS = 5;
+const int UNDER_LIMIT_OF_CONSECUTIVE_CORRECTS = 6;

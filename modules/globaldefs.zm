@@ -46,10 +46,10 @@ const bool      SHOW_ASSIGNED_GROUP             = true;
 const real 		GLOBAL_REFRESH_RATE 			= 16.594;
 
 // Duration of the interval between two trials.
-const dur       INTERTRIAL_INTERVAL             = 2000ms;
+const dur       INTERTRIAL_INTERVAL             = 4000ms;
 
 // Duration of the interval between the stimuli in a trial.
-const dur       INTERSTIMULUS_INTERVAL          = dur(GLOBAL_REFRESH_RATE*30);
+const dur       INTERSTIMULUS_INTERVAL          = 1000ms;
 
 // Duration of the fixation symbol presentation.
 const dur       FIXATION_DURATION               = 1000ms;

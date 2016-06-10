@@ -36,17 +36,13 @@ const string    UNEQUAL_BUTTON_TEXT             = "Different";
 const string    WELCOME_TEXT                    = "Welcome";
 const string    THANK_YOU_TEXT                  = "End of Experiment\n\nThank you very much!";
 
-const string    WORD_LEARNING_TEST_INSTRUCTIONS = "TODO: Word learning TEST instructions";
-
-const string    WORD_LEARNING_FAMILIARIZATION_INSTRUCTIONS = "TODO: Word learning FAMILIARIZATION instructions";
-
-const string     REPEAT_FAMILIARIZATION_BUTTON_TEXT = "<i>Repeat</i> familiarization";
-
-const string	OVERLAY_PRACTICE_DETECTION = "did you hear the first word in the second fragment?";
-
-string 			PRACTICE_DETECTION_INSTRUCTION; // SEE at setup_string()
-
-const string    END_OF_PRACTICE_DETECTION_INSTRUCTION = "End of the practice part.\n"
+const string    WORD_LEARNING_TEST_INSTRUCTIONS = 
+                //"TODO: Word learning TEST instructions";
+				"The following session is a test on the 4 image-sound pairs that you just learned.\n"
+				"\n"
+				"You will see the 4 images on the screen. Each time when you hear one sound, click on the corresponding image. \n"
+                "\n"
+				"If you feel impossible to pass the test, hit the upper middle button to redo the familiarization. \n"
                 "\n"
                 "If you have any questions at this moment please ask the "
                 "experimenter now.\n"
@@ -55,7 +51,40 @@ const string    END_OF_PRACTICE_DETECTION_INSTRUCTION = "End of the practice par
                 "<i>Hit any button on the button-box when ready to "
                 "proceed.</i>";
 
-const string GENERAL_PAUSE_TEXT = "General pause text";
+const string    WORD_LEARNING_FAMILIARIZATION_INSTRUCTIONS = 
+                //"Word learning FAMILIARIZATION instructions";
+				"In the following familiarization session you will learn 4 image-sound pairs.\n"
+                "\n"
+				"Each time you will see one image and hear one sound. \n"
+				"\n"
+				"Try to remember each sound-image matching. You will be tested on the pairs later. \n"
+                "\n"
+                "If you have any questions at this moment please ask the "
+                "experimenter now.\n"
+                "\n"
+//                "<i>Hit Enter when ready to proceed.</i>", 
+                "<i>Hit any button on the button-box when ready to "
+                "proceed.</i>";
+
+const string     REPEAT_FAMILIARIZATION_BUTTON_TEXT = "<i>Redo</i> familiarization";
+
+const string	OVERLAY_PRACTICE_DETECTION = "Did you hear the first word in the second fragment?";
+
+string 			PRACTICE_DETECTION_INSTRUCTION; // SEE at setup_string()
+
+const string    END_OF_PRACTICE_DETECTION_INSTRUCTION = "End of the practice part.\n"
+                "\n"
+				"You will do the same task in the test. Remember to only press <b>YES</b>  "
+				"when you think the word is repeated with the correct melody. \n"
+                "\n"
+                "If you have any questions at this moment please ask the "
+                "experimenter now.\n"
+                "\n"
+//                "<i>Hit Enter when ready to proceed.</i>", 
+                "<i>Hit any button on the button-box when ready to "
+                "proceed.</i>";
+
+const string GENERAL_PAUSE_TEXT = "You can take a short break and then begin the next block";
 
 void setup_strings()
 {
@@ -65,10 +94,12 @@ void setup_strings()
     PRACTICE_DETECTION_INSTRUCTION = "Well done!\n"
                 "We will be using the <i>button-box</i> for the next part of the experiment. \n\n"
 
-                "In this part you are going to hear word fragments over the headphones. "
-                "The word fragments come in pairs. Your task is to indicate "
-                "for each pair as quickly as possible whether you think the "
-                "first word is repeated in the second fragment. \n\n"
+                "In this part you are going to hear word fragments in pairs . "
+                "Your task is to indicate for each pair as quickly as possible "
+                "whether you think in each pair the first word is repeated in"
+                "the second fragment. Only press <b>YES</b> when the word "
+				"is repeated in the fragment with the correct <b>melody</b>!\n\n "
+				"\n"
 
                 "To respond with <b>YES</b> on the button-box press the button on the "
                 + yes_button_side + " side. \n\n"
