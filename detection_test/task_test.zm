@@ -59,7 +59,7 @@ Block task_test
             create_shallow_copy_test_items(test_items_block_copy);
 
             // Randomize test items table.
-            if (shuffle_test_items(test_items) != OK) terminate;
+            if (shuffle_test_items(test_items_block_copy) != OK) terminate;
 
             setup();
         }
