@@ -1,4 +1,6 @@
 #!/usr/bin/python
+# Cleans up the experiment data from a previous version where missed trials in one block are 
+#faultely replayed in subsequent blocks.
 
 import csv,os,sys
 
