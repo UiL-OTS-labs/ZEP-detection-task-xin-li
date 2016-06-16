@@ -52,18 +52,33 @@ Block task_test
     Block test
     {
         TestItem        item;   // current item
+        TestItem[..] test_items_block_copy;
 
         on_event:entry()
         {
+            create_shallow_copy_test_items(test_items_block_copy);
+
             // Randomize test items table.
             if (shuffle_test_items(test_items) != OK) terminate;
 
             setup();
         }
 
+        void create_shallow_copy_test_items(TestItem[] target)
+        {
+            target.size = 0;
+            target.size = test_items.size;
+            int index;
+            while(index < test_items.size)
+            {
+                target[index] = test_items[index];
+                index++;
+            }
+        }
+
         void setup()
         {   
-            test.num_cycles = test_items.size;
+            test.num_cycles = test_items_block_copy.size;
 
             // Prepare test page: progress bar enabled, feedback and prompt 
             // enabled.
@@ -84,7 +99,7 @@ Block task_test
         {
             on_event:entry()
             {
-                item = test_items[test.cycle];
+                item = test_items_block_copy[test.cycle];
                 test_page.action(this, item, reference_time, test.cycle);
             }
 
@@ -105,8 +120,8 @@ Block task_test
 
                 if(missed_current_item())
                 {
-                    test_items.size = test_items.size+1;
-                    test_items[test_items.size-1] = item;
+                    test_items_block_copy.size = test_items_block_copy.size+1;
+                    test_items_block_copy[test_items_block_copy.size-1] = item;
                     test.setup();
                 }
             }
