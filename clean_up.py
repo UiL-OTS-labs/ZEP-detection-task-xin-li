@@ -8,26 +8,32 @@ import csv,os,sys
 # Get the total number of args passed to the demo.py
 total = len(sys.argv)
 if total <= 1:
-	print "Usage: %s <FILENAME>"%(sys.argv[0])
+	print "Usage: %s <FILENAME> [DELIMITER]"%(sys.argv[0])
 	exit()
 
 filename = sys.argv[1]
 new_filename = 'corrected_'+filename
 
+if total >= 3:
+	delimiter = sys.argv[2]
+else:
+	delimiter = ';'
+
+
 def __main__():
 	headers = []
 	print "Reading: ",filename
 	with open(filename,'rU') as csvfile:
-		reader = csv.reader(csvfile)
+		reader = csv.reader(csvfile, delimiter = delimiter)
 		headers = reader.next()
 
 	print "Writing: ",new_filename
 	with open(new_filename,'w') as outputfile:
-		writer = csv.DictWriter(outputfile,headers)
+		writer = csv.DictWriter(outputfile,headers, delimiter = delimiter)
 		with open(filename,'rU') as csvfile:
 			writer.writeheader()
 			previous_rows = []
-			reader = csv.DictReader(csvfile)
+			reader = csv.DictReader(csvfile, delimiter = delimiter)
 			for row in reader:
 				if allowed(row, previous_rows):
 					previous_rows.append(row)
@@ -45,11 +51,15 @@ def allowed(current_row, previous_rows):
 	return True
 
 def rows_are_comparable(row1, row2):
-	result = \
-	row1['ppid'] == row2['ppid'] \
-	and row1['block'] == row2['block'] \
-	and row1['id'] == row2['id'] \
-	and row1['sesid'] == row2['sesid']
+	try:
+		result = \
+		row1['ppid'] == row2['ppid'] \
+		and row1['block'] == row2['block'] \
+		and row1['id'] == row2['id'] \
+		and row1['sesid'] == row2['sesid']
+	except KeyError:
+		print "Could not find a certain collumn; are you sure you are parsing a detection TEST?"
+		exit('Ran into an error! Stopping the script..')
 	return result
 
 def is_missing_response(row):
