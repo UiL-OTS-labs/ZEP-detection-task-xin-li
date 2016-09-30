@@ -12,6 +12,7 @@ English version.
 HISTORY:
 2009-12-02 TV   Created as part of the standard Zep modules.
 2016-05-09 CvR   Adjusted (C.P.A.vanrun@uu.nl)
+2016-09-30 CvR   Adjusted (C.P.A.vanrun@uu.nl)
 
 \******************************************************************************/
 
@@ -36,7 +37,7 @@ const string    UNEQUAL_BUTTON_TEXT             = "Different";
 const string    WELCOME_TEXT                    = "Welcome";
 const string    THANK_YOU_TEXT                  = "End of Experiment\n\nThank you very much!";
 
-const string    WORD_LEARNING_TEST_INSTRUCTIONS = 
+const string    WORD_LEARNING_TEST_INSTRUCTIONS =
                 //"TODO: Word learning TEST instructions";
 				"The following session is a test on the 4 image-sound pairs that you just learned.\n"
 				"\n"
@@ -47,11 +48,11 @@ const string    WORD_LEARNING_TEST_INSTRUCTIONS =
                 "If you have any questions at this moment please ask the "
                 "experimenter now.\n"
                 "\n"
-                "<i>Hit Continue when ready to proceed.</i>"; 
+                "<i>Hit Continue when ready to proceed.</i>";
 //                "<i>Hit any button on the button-box when ready to "
                // "proceed.</i>";
 
-const string    WORD_LEARNING_FAMILIARIZATION_INSTRUCTIONS = 
+const string    WORD_LEARNING_FAMILIARIZATION_INSTRUCTIONS =
                 //"Word learning FAMILIARIZATION instructions";
 				"In the following familiarization session you will learn 4 image-sound pairs.\n"
                 "\n"
@@ -84,9 +85,7 @@ const string    END_OF_PRACTICE_DETECTION_INSTRUCTION = "End of the practice par
                 "<i>Hit any button on the button-box when ready to "
                 "proceed.</i>";
 
-const string GENERAL_PAUSE_TEXT = "You can take a short break and then begin the next block.\n" 
-                                   "\n"
-                                   "Altogether there are 3 blocks.\n"
+const string GENERAL_PAUSE_TEXT = "You can take a short break and then begin the final block.\n"
                                    "\n"
                                    "<i>Hit any button on the button-box when ready to proceed.</i>";
 
@@ -116,6 +115,6 @@ void setup_strings()
                 "\n"
                 "First we shall do a short practice.\n"
                 "\n"
-//                "<i>Hit Enter when ready to start.</i>", 
+//                "<i>Hit Enter when ready to start.</i>",
                 "<i>Hit any button on the button-box when ready to start.</i>";
 }

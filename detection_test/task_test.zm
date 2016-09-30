@@ -25,6 +25,7 @@ Global structure of this experiment phase:
 HISTORY:
 2012-01-30 TV   Created.
 2016-05-09 CvR   Adjusted (C.P.A.vanrun@uu.nl)
+2016-09-30 CvR   Adjusted (C.P.A.vanrun@uu.nl)
 
 \******************************************************************************/
 
@@ -38,7 +39,7 @@ Block task_test
 {
     on_event:entry()
     {
-         task_test.num_cycles = 3;
+         task_test.num_cycles = 2;
     }
 
     Part
@@ -77,10 +78,10 @@ Block task_test
         }
 
         void setup()
-        {   
+        {
             test.num_cycles = test_items_block_copy.size;
 
-            // Prepare test page: progress bar enabled, feedback and prompt 
+            // Prepare test page: progress bar enabled, feedback and prompt
             // enabled.
             test_page.setup(num_cycles, true, true);
             test_page_overlay.only_show_question();
@@ -146,7 +147,7 @@ Block task_test
         on_event:entry()
         {
             pause_page.set_text(
-                GENERAL_PAUSE_TEXT, 
+                GENERAL_PAUSE_TEXT,
                 true);
             if(task_test.cycle != task_test.num_cycles-1)
             {
@@ -156,7 +157,7 @@ Block task_test
             else
                 signal(this, CONTINUE);
 
-            
+
         }
     }
 }
@@ -165,6 +166,6 @@ Block task_test
 void action(Part caller)
 {
     // Activate the task. When the task is done, the registered caller
-    // (c.q. the main experiment object) will automatically be signalled.
+    // (c.q. the main experiment object) will automatically be signaled.
     task_test.enter(caller);
 }
