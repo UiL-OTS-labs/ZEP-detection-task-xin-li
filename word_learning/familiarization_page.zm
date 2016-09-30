@@ -59,7 +59,7 @@ Page familiarization_page
         {
             init()
             {
-                text = "If you feel confident about the image-sound matching press a button.";
+                text = "If you feel confident about the image-sound matching, hit Continue.";
                 font_family = TEST_PAGE_PROMPT_FONT_FAMILY;
                 font_size = TEST_PAGE_PROMPT_FONT_SIZE;
                 text_color = TEST_PAGE_PROMPT_TEXT_COLOR;

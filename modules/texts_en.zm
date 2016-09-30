@@ -47,9 +47,9 @@ const string    WORD_LEARNING_TEST_INSTRUCTIONS =
                 "If you have any questions at this moment please ask the "
                 "experimenter now.\n"
                 "\n"
-//                "<i>Hit Enter when ready to proceed.</i>", 
-                "<i>Hit any button on the button-box when ready to "
-                "proceed.</i>";
+                "<i>Hit Continue when ready to proceed.</i>"; 
+//                "<i>Hit any button on the button-box when ready to "
+               // "proceed.</i>";
 
 const string    WORD_LEARNING_FAMILIARIZATION_INSTRUCTIONS = 
                 //"Word learning FAMILIARIZATION instructions";
@@ -57,34 +57,38 @@ const string    WORD_LEARNING_FAMILIARIZATION_INSTRUCTIONS =
                 "\n"
 				"Each time you will see one image and hear one sound. \n"
 				"\n"
-				"Try to remember each sound-image matching. You will be tested on the pairs later. \n"
+				"Try to remember each image-sound matching. You will be tested on the pairs later. \n"
                 "\n"
                 "If you have any questions at this moment please ask the "
                 "experimenter now.\n"
                 "\n"
-//                "<i>Hit Enter when ready to proceed.</i>", 
-                "<i>Hit any button on the button-box when ready to "
-                "proceed.</i>";
+                "<i>Hit Continue when ready to proceed.</i>";
+//                "<i>Hit any button on the button-box when ready to "
+             //   "proceed.</i>";
 
 const string     REPEAT_FAMILIARIZATION_BUTTON_TEXT = "<i>Redo</i> familiarization";
 
-const string	OVERLAY_PRACTICE_DETECTION = "Did you hear the first word in the second fragment?";
+const string	OVERLAY_PRACTICE_DETECTION = "In each pair, did you hear the first word in the second word?";
 
 string 			PRACTICE_DETECTION_INSTRUCTION; // SEE at setup_string()
 
 const string    END_OF_PRACTICE_DETECTION_INSTRUCTION = "End of the practice part.\n"
                 "\n"
 				"You will do the same task in the test. Remember to only press <b>YES</b>  "
-				"when you think the word is repeated with the correct melody. \n"
+				"when you think the first word is repeated in the second word with the correct <b>melody</b>. \n"
                 "\n"
                 "If you have any questions at this moment please ask the "
                 "experimenter now.\n"
                 "\n"
-//                "<i>Hit Enter when ready to proceed.</i>", 
+//                "<i>Hit Enter when ready to proceed.</i>",
                 "<i>Hit any button on the button-box when ready to "
                 "proceed.</i>";
 
-const string GENERAL_PAUSE_TEXT = "You can take a short break and then begin the next block";
+const string GENERAL_PAUSE_TEXT = "You can take a short break and then begin the next block.\n" 
+                                   "\n"
+                                   "Altogether there are 3 blocks.\n"
+                                   "\n"
+                                   "<i>Hit any button on the button-box when ready to proceed.</i>";
 
 void setup_strings()
 {
@@ -92,13 +96,15 @@ void setup_strings()
     string no_button_side = !experiment.LEFTSIDE_DETECT ? "left": "right";
 
     PRACTICE_DETECTION_INSTRUCTION = "Well done!\n"
-                "We will be using the <i>button-box</i> for the next part of the experiment. \n\n"
+                "We will be using the <b>button-box</b> for the next part of the experiment. \n\n"
 
-                "In this part you are going to hear word fragments in pairs . "
-                "Your task is to indicate for each pair as quickly as possible "
-                "whether you think in each pair the first word is repeated in"
-                "the second fragment. Only press <b>YES</b> when the word "
-				"is repeated in the fragment with the correct <b>melody</b>!\n\n "
+                "In this part you are going to hear words in pairs. "
+				"The first word is always a monosyllabic word, and the "
+				"second word is a disyllabic word. "
+                "Your task is to indicate as quickly as possible "
+                "whether you think in each pair the first word is repeated in "
+                "the second word. Only press <b>YES</b> when the first word "
+				"is repeated in the second word with the correct <b>melody</b>!\n\n "
 				"\n"
 
                 "To respond with <b>YES</b> on the button-box press the button on the "
