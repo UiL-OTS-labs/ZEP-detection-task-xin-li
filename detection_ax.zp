@@ -43,7 +43,7 @@ Experiment experiment
             LEFTSIDE_DETECT = false;
         else
             LEFTSIDE_DETECT = true;
-        
+
         setup_strings();
 
         control.button_box.open("/dev/ttyACM0");
@@ -71,14 +71,6 @@ Experiment experiment
         }
     }
 
-    Part word_learning_phase
-    {
-        on_event:entry()
-        {
-            word_learning::action(this);
-        }
-    }
-
     Part detection_practice_phase
     {
         on_event:entry()
@@ -90,7 +82,7 @@ Experiment experiment
     Part detection_test_phase
     {
         on_event:entry()
-        {   
+        {
             detection_test::action(this);
         }
     }
