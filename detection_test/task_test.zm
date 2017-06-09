@@ -39,7 +39,7 @@ Block task_test
 {
     on_event:entry()
     {
-         task_test.num_cycles = 2;
+         task_test.num_cycles = 4;
     }
 
     Part

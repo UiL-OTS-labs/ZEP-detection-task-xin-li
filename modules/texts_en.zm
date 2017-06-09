@@ -87,7 +87,7 @@ const string    END_OF_PRACTICE_DETECTION_INSTRUCTION = "End of the practice par
                 "<i>Hit any button on the button-box when ready to "
                 "enter the first block.</i>";
 
-const string GENERAL_PAUSE_TEXT = "You can take a short break and then begin the final block.\n"
+const string GENERAL_PAUSE_TEXT = "You can take a short break before starting with the next block.\n"
                                    "\n"
                                    "<i>Hit any button on the button-box when ready to proceed.</i>";
 
@@ -96,7 +96,7 @@ void setup_strings()
 	string yes_button_side = experiment.LEFTSIDE_DETECT ? "left": "right";
     string no_button_side = !experiment.LEFTSIDE_DETECT ? "left": "right";
 
-    PRACTICE_DETECTION_INSTRUCTION = 
+    PRACTICE_DETECTION_INSTRUCTION =
 //	"Well done!\n"
  //               "We will be using the <b>button-box</b> for the next part of the experiment. \n\n"
             	"Dear participant, \n"
