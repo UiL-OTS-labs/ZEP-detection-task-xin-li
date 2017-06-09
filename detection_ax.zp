@@ -11,7 +11,7 @@ HISTORY:
 
 \******************************************************************************/
 
-requires 1.12;
+requires 1.14;
 
 import std_windows1;
 import texts_en;

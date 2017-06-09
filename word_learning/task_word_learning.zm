@@ -1,6 +1,6 @@
 //2016-05-09 CvR   Adjusted (C.P.A.vanrun@uu.nl)
 
-requires 1.12;
+requires 1.14;
 
 import defs;
 import shuffle;
@@ -8,7 +8,7 @@ import output;
 import familiarization_page;
 import word_test_page;
 
-Block task_word_learning 
+Block task_word_learning
 {
     on_event:entry()
     {
@@ -23,13 +23,13 @@ Block task_word_learning
 
     Part instructions_familiarization
     {
-        on_event:entry() 
+        on_event:entry()
         {
 //            pause_page.set_text_size(1000, 600);
 
             //TODO: insert instructions
             pause_page.set_text(
-                WORD_LEARNING_FAMILIARIZATION_INSTRUCTIONS, 
+                WORD_LEARNING_FAMILIARIZATION_INSTRUCTIONS,
                 true);
 
             pause_page.action(this);
@@ -99,13 +99,13 @@ Block task_word_learning
 
     Part instructions_test
     {
-        on_event:entry() 
+        on_event:entry()
         {
 //            pause_page.set_text_size(1000, 600);
 
             //TODO: insert instructions
             pause_page.set_text(
-                WORD_LEARNING_TEST_INSTRUCTIONS, 
+                WORD_LEARNING_TEST_INSTRUCTIONS,
                 true);
 
             pause_page.action(this);
@@ -139,7 +139,7 @@ Block task_word_learning
 
         Trial trial
         {
-            
+
             SubTrial subtrial
             {
                 WordLearningItem item;
@@ -148,7 +148,7 @@ Block task_word_learning
                 {
                     if (test.cycle % word_learning_items.size == 0) // prevent an easy repeat of 3 or more.
                         if (shuffle_test_items(word_learning_items) != OK) terminate;
-     
+
                     item = word_learning_items[test.cycle % word_learning_items.size];
 
                     control.set_status("Test, correct => " + string(consecutive_correct) + "/" + string(UNDER_LIMIT_OF_CONSECUTIVE_CORRECTS) + ", " + word_learning_image_file[item.target_image_filename_index]);
@@ -163,14 +163,14 @@ Block task_word_learning
                     output.trialnum              = test.cycle+1;       // trial number
                     output.target_sound_filename = item.target_sound_filename;
                     output.target_image_filename = word_learning_image_file[item.target_image_filename_index];
-                    
+
                     output.top_left_image        = word_test_page.layout.image_on_location(TOP_LEFT);
                     output.bottom_left_image     = word_test_page.layout.image_on_location(BOTTOM_LEFT);
                     output.bottom_right_image    = word_test_page.layout.image_on_location(BOTTOM_RIGHT);
                     output.top_right_image       = word_test_page.layout.image_on_location(TOP_RIGHT);
-                    
+
                     output.choice_image_filename = word_test_page.response.value;
-                    
+
                     output.rt                    = word_test_page.response.rt;
                     output.correctness           = word_test_page.response.correctness;
 
@@ -196,7 +196,7 @@ Block task_word_learning
                         instructions_familiarization.enter();
                     }
                 }
-            } 
+            }
         }
     }
 }
