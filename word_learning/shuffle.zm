@@ -20,7 +20,7 @@ int shuffle_test_items(WordLearningItem[] test_items)
 	int last_target_image_filename_index = test_items[test_items.size-1].target_image_filename_index;
 
     int nitems = test_items.size;
- 
+
     // Depending on criteria and table contents it may happen that it takes
     // several attempts to make the shuffling succeed. We'll try it 100 times
     // before giving up.
@@ -31,7 +31,7 @@ int shuffle_test_items(WordLearningItem[] test_items)
         // First shuffle the entire item table.
         again = false;
         test_items.shuffle(0, -1);
- 
+
         // Walk over the table and check for items conflicting with the
         // criterion. If an item conflicts, then swap it randomly with one
         // of the items not yet looked at.
@@ -39,7 +39,9 @@ int shuffle_test_items(WordLearningItem[] test_items)
         while (n < nitems)
         {
             int nitemswaps;
-            while (test_items[n].target_image_filename_index == test_items[n-1].target_image_filename_index || test_items[0].target_image_filename_index == last_target_image_filename_index)
+            while (
+                test_items[n].target_image_filename_index == test_items[n-1].target_image_filename_index
+                || test_items[0].target_image_filename_index == last_target_image_filename_index)
             {
                 if (n+1 == nitems || ++nitemswaps == 10)
                 {
@@ -52,11 +54,11 @@ int shuffle_test_items(WordLearningItem[] test_items)
             n++;
         }
     }
- 
+
     if (again)
         println("Unable to shuffle test_items according to criteria. "
             "Check table and/or criteria.");
- 
+
     return again ? ERROR : OK;
 
     return OK;
