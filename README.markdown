@@ -12,8 +12,14 @@ Alternative one can use an attached [BeexyBox](http://www.beexy.org/responseboxe
 * [Extracting Experiment Results](https://www.beexy.nl/zep/wiki/doku.php?id=experiment:results)
 
 ## Pseudorandomisation
-For
-* No more than three of the same type in following properties in sequence (filler/target)
+For word_leaning:
+* Two similar images are not allowed; even if it loops.
+*
+For detection_practice:
+* No more than two of the same expected answer trials in sequence
+*
+For detection_test:
+* No two of the same target audio files in sequence.
 
 ## Particpant fields
 * Left or right-handedness (this will swap the buttons)
@@ -25,7 +31,7 @@ See `modules/stimuli.zm` for how stimuli should be configured.
 ## Custom Instruction Text
 Edit the variables found in `modules/texts_en.zm` to change the instructions shown to the participant.
 
-## Image Width and Misc settings
+## Misc settings
 See `test/defs.zm` for settings.
 
 The width of images can be globally set by changing the value of `IMAGE_WIDTH_PX` to some pixel value.
