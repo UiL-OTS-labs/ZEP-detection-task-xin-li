@@ -81,7 +81,7 @@ const string    END_OF_PRACTICE_DETECTION_INSTRUCTION = "End of the practice par
 //               "If you have any questions at this moment please ask the "
 //                "experimenter now.\n"
 //                "\n"
-                 "There will be two blocks in the test. "
+                 "There will be four blocks in the test. "
                   "\n"
 //                "<i>Hit Enter when ready to proceed.</i>",
                 "<i>Hit any button on the button-box when ready to "
@@ -104,7 +104,7 @@ void setup_strings()
                 "You are going to hear words in pairs. "
 				"The first word is always a monosyllabic word, and the "
 				"second word is a disyllabic word. "
-                "Your task is to indicate as quickly as possible "
+                "Your task is to indicate after the you hear the second word as quickly as possible "
                 "whether you think in each pair the first word is repeated in "
                 "the second word. Only press <b>YES</b> when the first word "
 				"is repeated in the second word with the correct <b>melody</b>!\n\n "

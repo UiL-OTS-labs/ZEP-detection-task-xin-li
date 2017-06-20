@@ -63,14 +63,14 @@ record TestItem
 // Practice item table.
 TestItem[..] prac_items =
 {
-    {1, "target1.wav",    "practice1.wav", 0},
-    {2, "target2.wav",    "practice2.wav", 0},
-    {3, "target3.wav",    "practice3.wav", 1},
-    {4, "target4.wav",    "practice4.wav", 1},
-    {5, "target1.wav",    "practice5.wav", 1},
-    {6, "target2.wav",    "practice6.wav", 1},
-    {7, "target3.wav",    "practice7.wav", 0},
-    {8, "target4.wav",    "practice8.wav", 0},
+    {1, "target11.wav",    "practice1.wav", 0},
+    {2, "target21.wav",    "practice2.wav", 0},
+    {3, "target31.wav",    "practice3.wav", 1},
+    {4, "target41.wav",    "practice4.wav", 1},
+    {5, "target11.wav",    "practice5.wav", 1},
+    {6, "target21.wav",    "practice6.wav", 1},
+    {7, "target31.wav",    "practice7.wav", 0},
+    {8, "target41.wav",    "practice8.wav", 0},
 };
 
 
